@@ -1,0 +1,47 @@
+from selenium import webdriver
+import ctypes
+
+#define Popup box 
+def Mbox(title, text, style):
+    return ctypes.windll.user32.MessageBoxW(0, text, title, style)
+
+#https://www.amazon.com/gp/product/B00ORLQJR6?pf_rd_r=JBNP0VFHKYD9FA8YF421&pf_rd_p=5ae2c7f8-e0c6-4f35-9071-dc3240e894a8&pd_rd_r=233e5e22-78e4-4f7e-9946-8d1eb2e94ed7&pd_rd_w=YKxtg&pd_rd_wg=GgywP&ref_=pd_gw_unk
+
+#practice web link
+i=-1
+
+#prompt  amazon link and check that it is an amazon link
+while i<0:
+    website = input('Input an amazon link ')
+    i=website.find("amazon.com/")
+    if i<0: 
+        print("Thats not an amazon link dingus")
+    else:   
+        print("good job")
+
+#launch web driver then minimize
+driver = webdriver.Chrome(r"C:\Users\409182\.spyder-py3\My Programs\chromedriver.exe")
+driver.minimize_window()
+driver.get(website)
+content = driver.page_source
+driver.close()
+
+
+
+uglyprice = content[content.find("price_inside_buybox")+59:content.find("price_inside_buybox")+79]
+
+price =[int(i) for i in uglyprice if i.isdigit()]
+
+result = lst = [None] * len(price)
+digits = len(price)-3
+fprice = 0.00
+
+for i,num in enumerate(price):
+    result[i] = price[i]*10**(digits-i)
+    fprice = round(result[i] + fprice,2)
+    
+Mbox('The price of your thing is:', "$" + str(fprice), 1)
+
+print("\n\n\n\n")
+print("The price of your thing is: $" + str(fprice))
+print("\n\n\n\n")
